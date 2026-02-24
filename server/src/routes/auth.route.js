@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const authMiddleware = require("../middlewares/auth")
 const { signup, login,logout } = require('../controllers/auth.controller');
+const upload = require("../config/multer")
 
 // Register route
 router.post('/signup', signup);
@@ -19,6 +20,16 @@ router.get('/check-auth', authMiddleware, (req, res) => {
     user: req.user
  });
 });
+
+// Test Route For Multer
+router.post("/file", upload.single("profile") ,(req,res) => {
+  if(!req.file){
+    return res.status(500).json({
+      message : "File not Found"
+    })
+  }
+  return res.status(200).json(req.file);
+})
 
 // Export the router
 module.exports = router;

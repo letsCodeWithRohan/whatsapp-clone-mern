@@ -8,6 +8,7 @@ import UserContextProvider from './context/UserContextProvider'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import { Toaster } from 'react-hot-toast'
+import Settings from './pages/Settings'
 
 function App() {
 
@@ -23,6 +24,7 @@ function App() {
         <Route path="/call" element={<Call />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/settings" element={<Settings/>}/>
         <Route path="*" element={<Error />} />
       </Routes>
     </UserContextProvider>

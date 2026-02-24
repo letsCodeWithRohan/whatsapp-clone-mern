@@ -19,7 +19,8 @@ const signup = async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 12);
-        const profilePicture = `https://avatar.iran.liara.run/public/${gender == "male" ? "boy" : "girl" }?username=${username}`;
+        // const profilePicture = `https://avatar.iran.liara.run/public/${gender == "male" ? "boy" : "girl" }?username=${username}`;
+        const profilePicture = `https://api.dicebear.com/9.x/initials/svg?seed=${fullname.replace(" ","-")}`;
 
         const newUser = new userModel({
             username,

@@ -60,9 +60,9 @@ function Sidebar() {
               <BsArchive className="text-lg cursor-pointer"/>
             </div>
             <div className="w-full h-[1px] bg-white/30"></div>
-            <div className="h-[2em] w-[2em] rounded-sm hover:bg-base-100 flex items-center justify-center">
+            <NavLink to="/settings" className="h-[2em] w-[2em] rounded-sm hover:bg-base-100 flex items-center justify-center">
               <GoGear className="text-lg cursor-pointer"/>
-            </div>
+            </NavLink>
             <div className="avatar">
               <div className="w-7 rounded-full">
                 <img
