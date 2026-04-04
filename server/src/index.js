@@ -1,10 +1,12 @@
 const express = require('express');
+const morgan = require("morgan")
 const { createServer } = require("http")
 const connectDB = require('./config/connectDB');
 const { Server } = require('socket.io')
 const authRoutes = require('./routes/auth.route');
 const userRoutes = require('./routes/user.route');
 const messageRoutes = require('./routes/message.route')
+const devRoutes = require("./routes/dev.route")
 const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const cors = require('cors')
@@ -20,6 +22,9 @@ const io = new Server(server, {
     credentials: true
   }
 });
+
+// Connect to MongoDB
+connectDB();
 
 // Map of userId -> socketId
 const onlineUsers = {}
@@ -51,8 +56,6 @@ io.on('connection', (socket) => {
 
 })
 
-
-
 const PORT = process.env.PORT || 5000;
 
 // Middleware to parse JSON bodies
@@ -62,18 +65,14 @@ app.use(cors({
 }))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser())
-// Connect to MongoDB
-connectDB();
+app.use(cookieParser());
+app.use(morgan("dev"));
+
 // User routes
 app.use('/api/auth', authRoutes);
-app.use("/api/user", userRoutes)
-app.use("/api/message", messageRoutes)
-
-app.get("/api/status", (req, res) => res.status(200).json({
-  message: "API is working",
-  success: true
-}))
+app.use("/api/user", userRoutes);
+app.use("/api/message", messageRoutes);
+app.use("/api/dev",devRoutes);
 
 // Start the server
 server.listen(PORT, () => {

@@ -24,7 +24,6 @@ function ChatScreen({ selectedUser }) {
         })
         .then(({data}) => {
             setMessages(data.messages)
-            console.log(messages)
         })
         .catch((err) => {
             console.error(err.message)
@@ -38,6 +37,7 @@ function ChatScreen({ selectedUser }) {
                 { message: input },
                 { withCredentials: true }
             );
+            
             setMessages([...messages, data.sentMessage]);
             socket.emit("message-sent",{
                 senderId: user._id,

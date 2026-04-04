@@ -4,15 +4,16 @@ const messageSchema = new mongoose.Schema({
     senderId : {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: [true, "Sender Id required"]
     },
     receiverId : {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: [true, "Receiver Id required"]
     },
     message: {
-        type: String
+        type: String,
+        required: [true, "message is required"]
     },
     image: {
         type: String
@@ -20,6 +21,9 @@ const messageSchema = new mongoose.Schema({
     seen: {
         type: Boolean,
         default: false
+    },
+    iv:{
+        type: String
     }
 },{timestamps: true})
 

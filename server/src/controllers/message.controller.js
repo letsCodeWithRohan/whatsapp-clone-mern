@@ -1,15 +1,24 @@
 const Message = require("../models/message.model")
+const { encrypt,decrypt } = require("../utils/cryptoUtilities")
 
 const sendMessage = async (req, res) => {
     try {
+        const { message, iv } = encrypt(req.body.message);
         const sentMessage = await Message.create({
             senderId: req.user._id,
             receiverId: req.params.receiverId,
-            message: req.body.message
+            message :message,
+            iv
         })
+        
         res.status(201).json({
-            sentMessage,
-            message: "Message sent"
+            sentMessage: {
+                ...sentMessage._doc,
+                message: req.body.message
+            },
+            senderId: req.user._id,
+            receiverId: req.params.receiverId,
+            message: "Message sent",
         })
     } catch (error) {
         console.log("[Send Message Error]:", error)
@@ -31,7 +40,15 @@ const getMessages = async (req, res) => {
             receiverId: req.params.senderId,
             senderId: req.user._id
             }]
-        }).populate('senderId')
+        }).populate('senderId');
+
+        let decryptedMessages =  allMessages.map((msg) => {
+            
+            return {
+                ...msg._doc,
+                message: decrypt(msg.message,msg.iv)
+            }
+        })
 
         // Mark all messages sent to the current user from the other user as seen
         await Message.updateMany({
@@ -43,7 +60,7 @@ const getMessages = async (req, res) => {
         })
 
         res.json({
-            messages: allMessages
+            messages: decryptedMessages
         })
     } catch (error) {
         console.log("[Fetch Messages Error]:", error)
@@ -84,7 +101,7 @@ const markMultipleMessages = async (req,res) => {
         })
         res.status(200).json({
             success: true,
-            message: "Single Message Marked"
+            message: "Muptiple Messages Marked"
         })
     } catch (error) {
         console.log("[Mark Multiple Messages Error]:", error)
