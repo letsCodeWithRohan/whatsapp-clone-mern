@@ -53,6 +53,9 @@ function ChatScreen({ selectedUser }) {
     useEffect(() => {
         socket.on("receive-message",(message) => {
             setMessages((prevMessages) => [...prevMessages, message]);
+            console.log(message);
+            
+            // handleMarkMessage();
         })
 
         return () => {

@@ -1,6 +1,6 @@
 const userModel = require('../models/user.model')
 const Message = require('../models/message.model')
-
+const { decrypt } = require("../utils/cryptoUtilities")
 const getAllUsers = async (req, res) => {
     try {
         const currentUserId = req.user._id;
@@ -32,7 +32,7 @@ const getAllUsers = async (req, res) => {
                     gender: user.gender,
                     createdAt: user.createdAt,
                     email: user.email,
-                    lastMessage: lastMessage?.message || null,
+                    lastMessage: lastMessage ? decrypt(lastMessage?.message,lastMessage?.iv) : null || null,
                     lastMessageSenderId: lastMessage?.senderId || null,
                     lastMessageTime: lastMessage?.createdAt || null,
                     unreadCount,

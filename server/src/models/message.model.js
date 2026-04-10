@@ -1,12 +1,12 @@
 const mongoose = require('mongoose')
 
 const messageSchema = new mongoose.Schema({
-    senderId : {
+    senderId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: [true, "Sender Id required"]
     },
-    receiverId : {
+    receiverId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: [true, "Receiver Id required"]
@@ -22,9 +22,12 @@ const messageSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    iv:{
+    seenAt: {
+        type: Date
+    },
+    iv: {
         type: String
     }
-},{timestamps: true})
+}, { timestamps: true })
 
-module.exports = mongoose.model('Message',messageSchema)
+module.exports = mongoose.model('Message', messageSchema)
