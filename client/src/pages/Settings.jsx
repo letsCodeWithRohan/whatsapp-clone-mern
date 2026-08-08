@@ -1,8 +1,8 @@
 import { FaWhatsapp } from "react-icons/fa";
 import Sidebar from "../Components/Sidebar";
 import ChatSideBar from "../Components/Chat/ChatSideBar";
-import DefaultSettingsScreen from "../Components/Settings/DefaultSettingsScreen";
 import SettingsSideBar from "../Components/Settings/SettingsSideBar";
+import { Outlet } from "react-router-dom";
 
 function Settings() {
   return (
@@ -16,7 +16,7 @@ function Settings() {
         <div className="bg-base-100 flex-1 h-full min-h-0 flex rounded-tl-md overflow-hidden">
           {/* <ChatSideBar /> */}
           <SettingsSideBar/>
-            <DefaultSettingsScreen/>
+            <Outlet/>
         </div>
       </div>
     </div>

@@ -9,6 +9,9 @@ import Login from './pages/Login'
 import Signup from './pages/Signup'
 import { Toaster } from 'react-hot-toast'
 import Settings from './pages/Settings'
+import GeneralSettings from './Components/Settings/GeneralSettings'
+import ProfileSettings from './Components/Settings/ProfileSettings'
+import DefaultSettingsScreen from './Components/Settings/DefaultSettingsScreen'
 
 function App() {
 
@@ -24,7 +27,11 @@ function App() {
         <Route path="/call" element={<Call />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/settings" element={<Settings/>}/>
+        <Route path="/settings" element={<Settings/>}>
+          <Route index element={<DefaultSettingsScreen />} />
+          <Route path="general" element={<GeneralSettings />} />
+          <Route path="profile" element={<ProfileSettings />} />
+        </Route>
         <Route path="*" element={<Error />} />
       </Routes>
     </UserContextProvider>

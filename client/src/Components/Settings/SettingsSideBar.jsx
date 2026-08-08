@@ -10,6 +10,7 @@ import {
 import { FiVideo } from "react-icons/fi";
 import { LuCircleHelp } from "react-icons/lu";
 import { FaRegKeyboard } from "react-icons/fa6";
+import { FaRegUserCircle } from "react-icons/fa";
 import { UserContext } from "../../context/UserContext";
 
 function SettingsSideBar() {
@@ -50,6 +51,12 @@ function SettingsSideBar() {
           icon={<IoLaptopOutline className="text-2xl mx-2" />}
           main="General"
           description="startup and close"
+        />
+        <SettingsTabs
+          icon={<FaRegUserCircle className="text-2xl mx-2" />}
+          main="Profile"
+          link="/settings/profile"
+          description="Name, profile picture, about"
         />
         <SettingsTabs
           icon={<IoKeyOutline className="text-2xl mx-2" />}

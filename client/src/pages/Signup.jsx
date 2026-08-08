@@ -63,19 +63,19 @@ function Signup() {
                     <form onSubmit={handleSubmit} className="flex-col gap-3 flex w-4/5">
                         <h1 className="text-2xl font-semibold">Get Started 🔰</h1>
                         <p className="text-gray-500 text-sm">Create a fresh account to chat.</p>
-                        <label className="input">
+                        <label className="input w-full">
                             <FaRegCircleUser className="text-lg opacity-50" />
                             <input type="text" required placeholder="Fullname" value={formData.fullname} onChange={handleInput} name="fullname" />
                         </label>
-                        <label className="input">
+                        <label className="input w-full">
                             <MdOutlineAlternateEmail className="text-lg opacity-50" />
                             <input type="text" required placeholder="Username" value={formData.username} onChange={handleInput} name="username" />
                         </label>
-                        <label className="input">
+                        <label className="input w-full">
                             <MdOutlineEmail className="text-lg opacity-50" />
                             <input type="email" required placeholder="Email address" value={formData.email} onChange={handleInput} name="email" />
                         </label>
-                        <label className="input">
+                        <label className="input w-full">
                             <IoKeyOutline className="text-lg opacity-50" />
                             <input type="password" required placeholder="Password" value={formData.password} onChange={handleInput} name="password" />
                         </label>
