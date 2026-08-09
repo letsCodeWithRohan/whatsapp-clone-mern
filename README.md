@@ -36,7 +36,7 @@ Ensure you have installed:
 - [Node.js](https://nodejs.org/) (v14.0 or higher)
 - [npm](https://www.npmjs.com/) (v6.0 or higher)
 - A **MongoDB** instance or [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) database connection string
-- A [Pusher Channels](https://pusher.com/) account for real-time app credentials
+- A [Cloudinary](https://cloudinary.com/) account for media storage app credentials
 
 ---
 
@@ -46,16 +46,16 @@ Ensure you have installed:
 Create a `.env` file in the `server` directory with the following variables:
 
 ```env
-NODE_ENV=node_environment // development || production
+NODE_ENV=node_environment -- development || production
 PORT=your_port_number
 
 JWT_SECRET=your_jwt_secret
 JWT_EXPIRES_IN=your_jwt_expiration_duration
 
-DB_URL=mongodbyour_mongodb_url
+DB_URL=mongodbyour_mongodb_url -- can be local or cloud
 
 CLOUDINARY_CLOUD_NAME=couldinary_name
 CLOUDINARY_API_KEY=cloudinary_api_key
 CLOUDINARY_API_SECRET=cloudinary_secret
 
-SECRET_KEY=your_secret_key //for_message_encryption_decryption
+SECRET_KEY=your_secret_key -- for_message_encryption_decryption
