@@ -18,28 +18,20 @@ function ChatScreen({ selectedUser }) {
   const [input, setInput] = useState("");
 
   useEffect(() => {
-    const loadMessages = async () => {
-      try {
-        const { data } = await axios.get(
-          `http://localhost:3000/api/message/get/${selectedUser._id}`,
-          {
-            withCredentials: true,
-          },
-        );
-
+    axios
+      .get(`http://localhost:3000/api/message/get/${selectedUser._id}`, {
+        withCredentials: true,
+      })
+      .then(({ data }) => {
         setMessages(data.messages);
 
-        // Tell server that this user's messages
-        // have been opened/read
         socket.emit("mark-messages-seen", {
           senderId: selectedUser._id,
         });
-      } catch (err) {
+      })
+      .catch((err) => {
         console.error(err.message);
-      }
-    };
-
-    loadMessages();
+      });
   }, [selectedUser]);
 
   const handleSendMessage = async () => {
@@ -70,7 +62,6 @@ function ChatScreen({ selectedUser }) {
     const handleMessagesSeen = ({ senderId, receiverId }) => {
       setMessages((prevMessages) => {
         return prevMessages.map((msg) => {
-          // Messages sent by me to the user
           if (
             String(msg.senderId) === String(user._id) &&
             String(msg.receiverId) === String(selectedUser._id)

@@ -38,8 +38,18 @@ io.on('connection', (socket) => {
   })
 
   socket.on("message-sent", ({ senderId, message, receiverId }) => {
-    socket.to(onlineUsers[receiverId]).emit("receive-message", message)
-  })
+
+    // Send message to receiver
+    if (onlineUsers[receiverId]) {
+        socket
+            .to(onlineUsers[receiverId])
+            .emit("receive-message", message);
+    }
+
+    // Confirm message to sender
+    socket.emit("message-sent-confirmed", message);
+
+});
 
   socket.on("mark-messages-seen", async ({ senderId }) => {
 

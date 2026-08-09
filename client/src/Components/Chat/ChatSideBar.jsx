@@ -25,48 +25,78 @@ function ChatSideBar({ selectedUser, setSelectedUser }) {
   };
 
   useEffect(() => {
+
     const handleReceiveMessage = (message) => {
-      setUsers((prevUsers) => {
-        const senderId = message.senderId;
 
-        const sender = prevUsers.find((user) => user._id === senderId);
+        setUsers((prevUsers) => {
 
-        if (!sender) {
-          return prevUsers;
-        }
+            const senderId = message.senderId;
 
-        const isCurrentChat = selectedUser?._id === senderId;
+            const sender = prevUsers.find(
+                (user) => user._id === senderId
+            );
 
-        const updatedUser = {
-          ...sender,
+            if (!sender) {
+                return prevUsers;
+            }
 
-          lastMessage: message.message,
+            const isCurrentChat =
+                selectedUser?._id === senderId;
 
-          lastMessageTime: message.createdAt,
+            const updatedUser = {
+                ...sender,
 
-          lastMessageSenderId: message.senderId,
+                lastMessage: message.message,
 
-          lastMessageReceiverId: message.receiverId,
+                lastMessageTime: message.createdAt,
 
-          unreadCount: isCurrentChat
-            ? sender.unreadCount
-            : sender.unreadCount + 1,
-        };
+                lastMessageSenderId: message.senderId,
 
-        const remainingUsers = prevUsers.filter(
-          (user) => user._id !== senderId,
-        );
+                lastMessageReceiverId: message.receiverId,
 
-        return [updatedUser, ...remainingUsers];
-      });
+                unreadCount:
+                    isCurrentChat
+                        ? sender.unreadCount
+                        : sender.unreadCount + 1,
+            };
+
+            const remainingUsers = prevUsers.filter(
+                (user) => user._id !== senderId
+            );
+
+            return [
+                updatedUser,
+                ...remainingUsers
+            ];
+        });
+
     };
 
-    socket.on("receive-message", handleReceiveMessage);
+    socket.on(
+        "receive-message",
+        handleReceiveMessage
+    );
+
+    socket.on(
+        "message-sent-confirmed",
+        handleReceiveMessage
+    );
 
     return () => {
-      socket.off("receive-message", handleReceiveMessage);
+
+        socket.off(
+            "receive-message",
+            handleReceiveMessage
+        );
+
+        socket.off(
+            "message-sent-confirmed",
+            handleReceiveMessage
+        );
+
     };
-  }, [selectedUser]);
+
+}, [selectedUser]);
 
   useEffect(() => {
     fetchUsers();
@@ -82,6 +112,21 @@ function ChatSideBar({ selectedUser, setSelectedUser }) {
       setUsers(filteredUsers);
     }
   }, [search, users]);
+  
+  const handleUserClick = (user) => {
+    setSelectedUser(user);
+
+    setUsers((prevUsers) =>
+      prevUsers.map((u) =>
+        u._id === user._id
+          ? {
+              ...u,
+              unreadCount: 0,
+            }
+          : u,
+      ),
+    );
+  };
 
   return (
     <div className="md:w-[25%] w-max h-full items-center md:p-3 p-2 justify-between gap-3 border-base-300 border-r-2 flex flex-col">
@@ -118,7 +163,7 @@ function ChatSideBar({ selectedUser, setSelectedUser }) {
                 key={user._id}
                 _id={user._id}
                 {...user}
-                onClick={() => setSelectedUser(user)}
+                onClick={() => handleUserClick(user)}
               />
             ))}
         {/* If No Chats then */}
