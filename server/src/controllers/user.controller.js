@@ -1,6 +1,8 @@
 const userModel = require('../models/user.model')
 const Message = require('../models/message.model')
 const { decrypt } = require("../utils/cryptoUtilities")
+const { uploadToCloudinary } = require('../config/cloudinary')
+
 const getAllUsers = async (req, res) => {
     try {
         const currentUserId = req.user._id;
@@ -27,12 +29,12 @@ const getAllUsers = async (req, res) => {
                 return {
                     _id: user._id,
                     fullname: user.fullname,
-                    profilePicture : user.profilePicture,
+                    profilePicture: user.profilePicture,
                     username: user.username,
                     gender: user.gender,
                     createdAt: user.createdAt,
                     email: user.email,
-                    lastMessage: lastMessage ? decrypt(lastMessage?.message,lastMessage?.iv) : null || null,
+                    lastMessage: lastMessage ? decrypt(lastMessage?.message, lastMessage?.iv) : null || null,
                     lastMessageSenderId: lastMessage?.senderId || null,
                     lastMessageTime: lastMessage?.createdAt || null,
                     unreadCount,
@@ -49,6 +51,76 @@ const getAllUsers = async (req, res) => {
     }
 }
 
+const updateFullname = async (req, res) => {
+    try {
+        const { fullname } = req.body;
+        const userId = req.user._id;
+
+        const updatedUser = await userModel.findByIdAndUpdate(
+            userId,
+            { fullname },
+            { new: true }
+        ).select('-password -createdAt -updatedAt -__v -lastSeen');
+
+        res.status(200).json({
+            message: 'Fullname updated successfully',
+            user: updatedUser
+        });
+    } catch (error) {
+        console.log("[Update Fullname Error]: ", error)
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+const updateBio = async (req, res) => {
+    try {
+        const { bio } = req.body;
+        const userId = req.user._id;
+
+        const updatedUser = await userModel.findByIdAndUpdate(
+            userId,
+            { bio },
+            { new: true }
+        ).select('-password -createdAt -updatedAt -__v -lastSeen');
+
+        res.status(200).json({
+            message: 'Bio updated successfully',
+            user: updatedUser
+        });
+    } catch (error) {
+        console.log("[Update Bio Error]: ", error)
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+const updateProfilePicture = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        // Pass the file buffer to Cloudinary
+        const result = await uploadToCloudinary(req.file.buffer);
+
+        const updatedUser = await userModel.findByIdAndUpdate(
+            req.user._id,
+            { profilePicture: result.secure_url },
+            { new: true }
+        ).select('-password -createdAt -updatedAt -__v -lastSeen');
+
+        res.status(200).json({
+            message: 'Profile picture updated successfully',
+            user: updatedUser
+        });
+    } catch (error) {
+        console.log("[Update Profile Picture Error]: ", error)
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
 module.exports = {
-    getAllUsers
+    getAllUsers,
+    updateFullname,
+    updateBio,
+    updateProfilePicture
 }
