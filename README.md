@@ -18,13 +18,13 @@ A real-time full-stack web application replicating key features of WhatsApp Web,
 ### **Frontend**
 - **React.js** – Client-side UI framework
 - **Axios** – HTTP client for API requests
-- **Material-UI (MUI)** – UI components and icons
-- **Pusher-js** – Real-time event listening on the client
+- **Daisy-UI (MUI)** – UI components and stylling
+- **Tailwindcss** – For css inline-stylling
 
 ### **Backend**
 - **Node.js & Express.js** – Server runtime and Web API framework
 - **MongoDB & Mongoose** – NoSQL database and ODM schema definitions
-- **Pusher** – Real-time server event broadcasting trigger
+- **socket.io** – Real-time server event broadcasting trigger
 - **CORS & dotenv** – Cross-Origin Resource Sharing and environment management
 
 ---
@@ -46,9 +46,16 @@ Ensure you have installed:
 Create a `.env` file in the `server` directory with the following variables:
 
 ```env
-PORT=9000
-MONGO_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/whatsappdb?retryWrites=true&w=majority
-PUSHER_APP_ID=your_pusher_app_id
-PUSHER_KEY=your_pusher_key
-PUSHER_SECRET=your_pusher_secret
-PUSHER_CLUSTER=your_pusher_cluster
+NODE_ENV=node_environment // development || production
+PORT=your_port_number
+
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRES_IN=your_jwt_expiration_duration
+
+DB_URL=mongodbyour_mongodb_url
+
+CLOUDINARY_CLOUD_NAME=couldinary_name
+CLOUDINARY_API_KEY=cloudinary_api_key
+CLOUDINARY_API_SECRET=cloudinary_secret
+
+SECRET_KEY=your_secret_key //for_message_encryption_decryption
