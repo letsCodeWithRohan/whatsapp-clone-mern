@@ -55,7 +55,6 @@ function ChatScreen({ selectedUser }) {
             setMessages((prevMessages) => [...prevMessages, message]);
             console.log(message);
             
-            // handleMarkMessage();
         })
 
         return () => {

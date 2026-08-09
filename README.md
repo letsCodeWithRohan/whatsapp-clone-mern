@@ -18,7 +18,7 @@ A real-time full-stack web application replicating key features of WhatsApp Web,
 ### **Frontend**
 - **React.js** – Client-side UI framework
 - **Axios** – HTTP client for API requests
-- **Daisy-UI (MUI)** – UI components and stylling
+- **Daisy-UI** – UI components and stylling
 - **Tailwindcss** – For css inline-stylling
 
 ### **Backend**

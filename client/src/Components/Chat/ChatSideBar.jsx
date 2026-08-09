@@ -4,12 +4,14 @@ import { IoSearch } from "react-icons/io5";
 import ChatUserTab from "./ChatUserTab";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import socket from "../../socket.js";
 
 function ChatSideBar({selectedUser,setSelectedUser}) {
 
     const [users, setUsers] = useState([]);
     const [search, setSearch] = useState('');
     const [loading, setLoading] = useState(true);
+
     const fetchUsers = async () => {
         try {
             const response = await axios.get('http://localhost:3000/api/user/users',{
@@ -22,6 +24,61 @@ function ChatSideBar({selectedUser,setSelectedUser}) {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+
+    const handleReceiveMessage = (message) => {
+
+        setUsers((prevUsers) => {
+
+            const senderId = message.senderId;
+
+            const sender = prevUsers.find(
+                user => user._id === senderId
+            );
+
+            if (!sender) {
+                return prevUsers;
+            }
+
+            const isCurrentChat =
+                selectedUser?._id === senderId;
+
+            const updatedUser = {
+                ...sender,
+
+                lastMessage: message.message,
+
+                lastMessageTime: message.createdAt,
+
+                lastMessageSenderId: message.senderId,
+
+                lastMessageReceiverId: message.receiverId,
+
+                unreadCount: isCurrentChat
+                    ? sender.unreadCount
+                    : sender.unreadCount + 1
+            };
+
+            const remainingUsers = prevUsers.filter(
+                user => user._id !== senderId
+            );
+
+            return [
+                updatedUser,
+                ...remainingUsers
+            ];
+        });
+    };
+
+    socket.on("receive-message", handleReceiveMessage);
+
+    return () => {
+        socket.off("receive-message", handleReceiveMessage);
+    };
+
+}, [selectedUser]);
+
     useEffect(() => {
         fetchUsers();
     }, []);
