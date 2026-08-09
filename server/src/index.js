@@ -10,6 +10,7 @@ const devRoutes = require("./routes/dev.route")
 const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const cors = require('cors')
+const Message = require("./models/message.model");
 // Load environment variables from .env file
 dotenv.config();
 
@@ -36,9 +37,60 @@ io.on('connection', (socket) => {
     io.emit('update-user-status', Object.keys(onlineUsers))
   })
 
-  socket.on("message-sent",({senderId,message,receiverId}) => {
-    socket.to(onlineUsers[receiverId]).emit("receive-message",message)
+  socket.on("message-sent", ({ senderId, message, receiverId }) => {
+    socket.to(onlineUsers[receiverId]).emit("receive-message", message)
   })
+
+  socket.on("mark-messages-seen", async ({ senderId }) => {
+
+    try {
+
+      // Find the user associated with this socket
+      const receiverId = Object.keys(onlineUsers)
+        .find(userId => onlineUsers[userId] === socket.id);
+
+      if (!receiverId) {
+        return;
+      }
+
+      // Mark messages from sender -> current user as seen
+      await Message.updateMany(
+        {
+          senderId,
+          receiverId,
+          seen: false
+        },
+        {
+          $set: {
+            seen: true,
+            seenAt: new Date()
+          }
+        }
+      );
+
+      // Notify the sender in real-time
+      if (onlineUsers[senderId]) {
+
+        socket.to(onlineUsers[senderId]).emit(
+          "messages-seen",
+          {
+            senderId,
+            receiverId
+          }
+        );
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "[Mark Messages Seen Error]:",
+        error
+      );
+
+    }
+
+  });
 
   socket.on('disconnect', () => {
     let disconnectedUserId = null
@@ -73,7 +125,7 @@ app.use(morgan("dev"));
 app.use('/api/auth', authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/message", messageRoutes);
-app.use("/api/dev",devRoutes);
+app.use("/api/dev", devRoutes);
 
 // Start the server
 server.listen(PORT, () => {

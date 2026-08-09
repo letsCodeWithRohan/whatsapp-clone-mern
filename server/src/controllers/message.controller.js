@@ -30,45 +30,62 @@ const sendMessage = async (req, res) => {
 }
 
 const getMessages = async (req, res) => {
+
     try {
-        // Fetch all messages between the two users
+
+        // First mark all unread messages as seen
+        await Message.updateMany(
+            {
+                senderId: req.params.senderId,
+                receiverId: req.user._id,
+                seen: false
+            },
+            {
+                $set: {
+                    seen: true,
+                    seenAt: new Date()
+                }
+            }
+        );
+
+        // Now fetch messages
         const allMessages = await Message.find({
-            $or: [{
-            senderId: req.params.senderId,
-            receiverId: req.user._id
-            }, {
-            receiverId: req.params.senderId,
-            senderId: req.user._id
-            }]
+            $or: [
+                {
+                    senderId: req.params.senderId,
+                    receiverId: req.user._id
+                },
+                {
+                    receiverId: req.params.senderId,
+                    senderId: req.user._id
+                }
+            ]
         }).populate('senderId');
 
-        let decryptedMessages =  allMessages.map((msg) => {
-            
+        const decryptedMessages = allMessages.map((msg) => {
+
             return {
                 ...msg._doc,
-                message: decrypt(msg.message,msg.iv)
-            }
-        })
+                message: decrypt(msg.message, msg.iv)
+            };
 
-        // Mark all messages sent to the current user from the other user as seen
-        await Message.updateMany({
-            senderId: req.params.senderId,
-            receiverId: req.user._id,
-            seen: false
-        }, {
-            seen: true
-        })
+        });
 
         res.json({
             messages: decryptedMessages
-        })
+        });
+
     } catch (error) {
-        console.log("[Fetch Messages Error]:", error)
+
+        console.log("[Fetch Messages Error]:", error);
+
         res.status(500).json({
             success: false,
             message: "Internal Server Error"
-        })
+        });
+
     }
+
 }
 
 const markSingleMessage = async (req,res) => {
