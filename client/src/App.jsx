@@ -12,6 +12,9 @@ import Settings from './pages/Settings'
 import GeneralSettings from './Components/Settings/GeneralSettings'
 import ProfileSettings from './Components/Settings/ProfileSettings'
 import DefaultSettingsScreen from './Components/Settings/DefaultSettingsScreen'
+import AuthFlow from './pages/ForgotPassword'
+import ForgotPass from './pages/ForgotPass'
+import VerifyOtp from './pages/VerifyOTP'
 
 function App() {
 
@@ -27,6 +30,9 @@ function App() {
         <Route path="/call" element={<Call />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/fp" element={<AuthFlow />} />
+        <Route path="/forgot-password" element={<ForgotPass />} />
+        <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/settings" element={<Settings/>}>
           <Route index element={<DefaultSettingsScreen />} />
           <Route path="general" element={<GeneralSettings />} />

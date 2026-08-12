@@ -31,5 +31,17 @@ router.post("/file", upload.single("profile") ,(req,res) => {
   return res.status(200).json(req.file);
 })
 
+router.post("/forgot-password", async (req, res) => {
+  const { email } = req.body;
+
+  // Here you would typically generate an OTP and send it to the user's email.
+  // For demonstration purposes, we'll just return a success message.
+
+  if(!email){
+    return res.status(400).json({ message: "Email is required" });
+  }
+  res.status(200).json({ message: `OTP sent to ${email}` });
+});
+
 // Export the router
 module.exports = router;
