@@ -3,13 +3,15 @@ import { FaRegPenToSquare } from "react-icons/fa6";
 import { IoSearch } from "react-icons/io5";
 import ChatUserTab from "./ChatUserTab";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { UserContext } from "../../context/UserContext";
 import socket from "../../socket.js";
 
 function ChatSideBar({ selectedUser, setSelectedUser }) {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const { user } = useContext(UserContext);
 
   const fetchUsers = async () => {
     try {
@@ -25,78 +27,66 @@ function ChatSideBar({ selectedUser, setSelectedUser }) {
   };
 
   useEffect(() => {
-
     const handleReceiveMessage = (message) => {
-
-        setUsers((prevUsers) => {
-
-            const senderId = message.senderId;
-
-            const sender = prevUsers.find(
-                (user) => user._id === senderId
-            );
-
-            if (!sender) {
-                return prevUsers;
-            }
-
-            const isCurrentChat =
-                selectedUser?._id === senderId;
-
-            const updatedUser = {
-                ...sender,
-
-                lastMessage: message.message,
-
-                lastMessageTime: message.createdAt,
-
-                lastMessageSenderId: message.senderId,
-
-                lastMessageReceiverId: message.receiverId,
-
-                unreadCount:
-                    isCurrentChat
-                        ? sender.unreadCount
-                        : sender.unreadCount + 1,
-            };
-
-            const remainingUsers = prevUsers.filter(
-                (user) => user._id !== senderId
-            );
-
-            return [
-                updatedUser,
-                ...remainingUsers
-            ];
-        });
-
+      updateSidebar(message, "received");
     };
 
-    socket.on(
-        "receive-message",
-        handleReceiveMessage
-    );
+    const handleSentMessage = (message) => {
+      updateSidebar(message, "sent");
+    };
 
-    socket.on(
-        "message-sent-confirmed",
-        handleReceiveMessage
-    );
+    const updateSidebar = (message, type) => {
+      setUsers((prevUsers) => {
+        const chatUserId =
+          type === "sent" ? message.receiverId : message.senderId;
+
+        const chatUser = prevUsers.find(
+          (u) => String(u._id) === String(chatUserId),
+        );
+
+        if (!chatUser) {
+          return prevUsers;
+        }
+
+        const isCurrentChat = String(selectedUser?._id) === String(chatUserId);
+
+        const updatedUser = {
+          ...chatUser,
+
+          lastMessage: message.message,
+
+          lastMessageTime: message.createdAt,
+
+          lastMessageSenderId: message.senderId,
+
+          lastMessageReceiverId: message.receiverId,
+
+          unreadCount:
+            type === "sent"
+              ? 0
+              : isCurrentChat
+                ? chatUser.unreadCount
+                : chatUser.unreadCount + 1,
+        };
+
+        const remainingUsers = prevUsers.filter(
+          (u) => String(u._id) !== String(chatUserId),
+        );
+
+        return [updatedUser, ...remainingUsers];
+      });
+    };
+
+    socket.on("receive-message", handleReceiveMessage);
+
+    socket.on("message-sent-confirmed", handleSentMessage);
 
     return () => {
+      socket.off("receive-message", handleReceiveMessage);
 
-        socket.off(
-            "receive-message",
-            handleReceiveMessage
-        );
-
-        socket.off(
-            "message-sent-confirmed",
-            handleReceiveMessage
-        );
-
+      socket.off("message-sent-confirmed", handleSentMessage);
     };
-
-}, [selectedUser]);
+  }, [selectedUser]);
 
   useEffect(() => {
     fetchUsers();
@@ -106,13 +96,13 @@ function ChatSideBar({ selectedUser, setSelectedUser }) {
     if (search !== "") {
       const filteredUsers = users.filter(
         (user) =>
-          user.firstName.toLowerCase().includes(search.toLowerCase()) ||
-          user.lastName.toLowerCase().includes(search.toLowerCase()),
+          user.fullname.toLowerCase().includes(search.toLowerCase()) ||
+          user.username.toLowerCase().includes(search.toLowerCase()),
       );
       setUsers(filteredUsers);
     }
   }, [search, users]);
-  
+
   const handleUserClick = (user) => {
     setSelectedUser(user);
 

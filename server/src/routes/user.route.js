@@ -1,15 +1,44 @@
-const router = require('express').Router()
-const authMiddleware = require('../middlewares/auth')
-const multer  = require('multer')
-const upload = multer({ dest: 'src/uploads/' })
-const { getAllUsers,updateFullname,updateBio,updateProfilePicture } = require('../controllers/user.controller')
+const router = require('express').Router();
 
-router.get('/users',authMiddleware,getAllUsers)
+const authMiddleware = require('../middlewares/auth');
 
-router.post('/update-fullname',authMiddleware,updateFullname)
+const multer = require('multer');
 
-router.post('/update-bio',authMiddleware,updateBio)
+const upload = multer({
+    storage: multer.memoryStorage()
+});
 
-router.post('/update-profile-picture',authMiddleware, upload.single("profilePicture") , updateProfilePicture)
+const {
+    getAllUsers,
+    updateFullname,
+    updateBio,
+    updateProfilePicture
+} = require('../controllers/user.controller');
 
-module.exports = router
+
+router.get(
+    '/users',
+    authMiddleware,
+    getAllUsers
+);
+
+router.post(
+    '/update-fullname',
+    authMiddleware,
+    updateFullname
+);
+
+router.post(
+    '/update-bio',
+    authMiddleware,
+    updateBio
+);
+
+router.post(
+    '/update-profile-picture',
+    authMiddleware,
+    upload.single("profilePicture"),
+    updateProfilePicture
+);
+
+module.exports = router;

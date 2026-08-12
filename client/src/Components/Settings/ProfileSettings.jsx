@@ -77,49 +77,65 @@ function ProfileSettings() {
   const handleProfilePictureChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePicture(reader.result);
-        setPreviewImage(reader.result);
-        // Here you can also send the new profile picture to the server if needed
-      };
-      reader.readAsDataURL(file);
+        setProfilePicture(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setPreviewImage(reader.result);
+        };
+        reader.readAsDataURL(file);
     }
-  };
+};
 
   const handleProfilePictureUpdate = async () => {
-  if (!profilePicture) {
-    toast.error("Please select an image first");
-    return;
-  }
 
-  try {
-    // 1. Create a FormData instance
-    const formData = new FormData();
-    // 'profilePicture' must match Multer's upload.single('profilePicture')
-    formData.append("profilePicture", profilePicture);
-
-    // 2. Send FormData with Axios
-    const response = await axios.post(
-      "http://localhost:3000/api/user/update-profile-picture",
-      formData, // Pass formData directly
-      {
-        withCredentials: true,
-        // Do NOT manually set Content-Type header; Axios and the browser handle it automatically
-      }
-    );
-
-    // Axios automatically parses JSON, no need for `await response.data`
-    const data = response.data;
-
-    if (response.status === 200) {
-      toast.success(data?.message || "Profile picture updated!");
-      setUser(data?.user); // Update your React state/context
+    if (!profilePicture) {
+        toast.error("Please select an image first");
+        return;
     }
-  } catch (error) {
-    console.error("[Update Profile Picture Error]: ", error);
-    toast.error(error.response?.data?.message || "Failed to update profile picture");
-  }
+
+    try {
+
+        const formData = new FormData();
+
+        formData.append(
+            "profilePicture",
+            profilePicture
+        );
+
+        const response = await axios.post(
+            "http://localhost:3000/api/user/update-profile-picture",
+            formData,
+            {
+                withCredentials: true
+            }
+        );
+
+        if (response.status === 200) {
+
+            toast.success(
+                response.data.message ||
+                "Profile picture updated!"
+            );
+
+            setUser(response.data.user);
+
+            // Optional: clear temporary preview
+            setPreviewImage("");
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "[Update Profile Picture Error]:",
+            error
+        );
+
+        toast.error(
+            error.response?.data?.message ||
+            "Failed to update profile picture"
+        );
+    }
 };
 
   return (
